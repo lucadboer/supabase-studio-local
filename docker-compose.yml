@@ -1,0 +1,51 @@
+services:
+  pg-meta:
+    image: supabase/postgres-meta:v0.84.2
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      PG_META_PORT: "8080"
+      PG_META_DB_URL: "postgresql://postgres:postgres@host.docker.internal:5432/postgres"
+      CRYPTO_KEY: "${PG_META_CRYPTO_KEY:-change-me-change-me-change-me-32chars}"
+      PG_META_CRYPTO_KEY: "${PG_META_CRYPTO_KEY:-change-me-change-me-change-me-32chars}"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/health').then(r=>{if(r.status!==200)throw 0})"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  studio:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - pg-meta
+    ports:
+      - "8000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      STUDIO_PG_META_URL: "http://pg-meta:8080"
+      PG_META_URL: "http://pg-meta:8080"
+      PG_META_CRYPTO_KEY: "${PG_META_CRYPTO_KEY:-change-me-change-me-change-me-32chars}"
+      STUDIO_LOCAL_COOKIE_SECRET: "${STUDIO_LOCAL_COOKIE_SECRET:-cookie-secret-change-me-change-me}"
+      DOCKER_POSTGRES_HOST: "host.docker.internal"
+      DOCKER_SOCKET: "/var/run/docker.sock"
+      NEXT_PUBLIC_IS_PLATFORM: "false"
+      SUPABASE_URL: "http://localhost:8000"
+      SUPABASE_PUBLIC_URL: "http://localhost:8000"
+      SUPABASE_ANON_KEY: "${SUPABASE_ANON_KEY:-anon-not-used-in-local}"
+      SUPABASE_SERVICE_KEY: "${SUPABASE_SERVICE_KEY:-service-not-used-in-local}"
+      DEFAULT_ORGANIZATION_NAME: "Local"
+      DEFAULT_PROJECT_NAME: "Local Postgres"
+      POSTGRES_HOST: "host.docker.internal"
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER_READ_WRITE: "postgres"
+      POSTGRES_USER_READ_ONLY: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "postgres"
+      HOSTNAME: "0.0.0.0"
+      PORT: "3000"

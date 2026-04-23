@@ -1,0 +1,33 @@
+{
+  "name": "supabase-studio-local",
+  "description": "Supabase Studio extraído com descoberta automática de Postgres via Docker.",
+  "version": "0.0.1",
+  "license": "Apache-2.0",
+  "private": true,
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "build": "turbo run build",
+    "build:studio": "turbo run build --filter=studio",
+    "dev:studio": "turbo run dev --filter=studio --parallel",
+    "typecheck": "turbo --continue typecheck",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean --parallel && rimraf -G node_modules/{*,.bin,.modules.yaml} .turbo/cache"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
+    "@types/node": "catalog:",
+    "eslint": "^9.0.0",
+    "prettier": "^3.8.0",
+    "rimraf": "^6.0.0",
+    "tailwindcss": "catalog:",
+    "tsx": "catalog:",
+    "turbo": "2.9.6",
+    "typescript": "catalog:",
+    "zod": "catalog:"
+  },
+  "engines": {
+    "pnpm": "10.24",
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.24.0"
+}

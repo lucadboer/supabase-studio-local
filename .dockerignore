@@ -1,0 +1,15 @@
+.git
+.github
+node_modules
+apps/studio/node_modules
+apps/studio/.next/cache
+apps/studio/.next/trace*
+apps/studio/.next/diagnostics
+apps/studio/.next/turbopack
+apps/studio/.next/build
+apps/studio/.next/types
+apps/studio/.next/standalone
+packages/*/node_modules
+.vercel
+**/.env.*
+.DS_Store
