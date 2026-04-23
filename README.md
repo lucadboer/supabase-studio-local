@@ -6,6 +6,8 @@ configuration — clone, run, open.
 No env vars. No `.env` file. No Supabase stack. Just the Studio UI plugged into
 whatever Postgres containers you already have.
 
+![Every Postgres container running on your Docker host, auto-detected](.github/screenshot-list.png)
+
 ## Run it
 
 ```bash
@@ -15,6 +17,12 @@ docker compose up -d
 ```
 
 Open **http://localhost:8000**.
+
+If you have nothing running yet you'll see this:
+
+![Empty state when no Postgres container is running](.github/screenshot-empty.png)
+
+Start a Postgres container on your host and hit **Refresh**.
 
 ## Use it
 
