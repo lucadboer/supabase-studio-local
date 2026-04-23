@@ -15,20 +15,27 @@ RUN npm install -g pnpm@10.24.0
 
 WORKDIR /app
 
+FROM base AS builder
 COPY . .
+RUN pnpm install --frozen-lockfile --ignore-scripts
+ENV SKIP_ASSET_UPLOAD=1
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=6144"
+RUN pnpm --filter studio exec next build --webpack
 
-RUN pnpm install --frozen-lockfile --ignore-scripts --prod=false 2>&1 | tail -20
-
+FROM base AS production
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
-ENV STUDIO_PORT=3000
 ENV NEXT_TELEMETRY_DISABLED=1
 
-EXPOSE 3000
-
+COPY --from=builder /app/apps/studio/public ./apps/studio/public
+COPY --from=builder /app/apps/studio/.next/standalone ./
+COPY --from=builder /app/apps/studio/.next/static ./apps/studio/.next/static
 COPY apps/studio/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+EXPOSE 3000
 ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["pnpm", "--filter", "studio", "exec", "next", "start", "-p", "3000", "-H", "0.0.0.0"]
+CMD ["node", "apps/studio/server.js"]
